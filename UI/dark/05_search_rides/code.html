@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html class="light dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Search Rides - CoRider</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Manrope -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec", // Bright Blue
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "input-light": "#ffffff",
+                        "input-dark": "#1c2536",
+                        "muted-indigo": "#3b4d70", // Custom muted color for text/accents
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                    boxShadow: {
+                        "soft": "0 4px 20px -2px rgba(0, 0, 0, 0.05)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for cleaner look */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col antialiased selection:bg-primary/30 selection:text-primary">
+<!-- Header -->
+<header class="flex items-center justify-between px-6 pt-6 pb-2 sticky top-0 z-20 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-sm transition-colors duration-300">
+<button class="flex size-10 items-center justify-center rounded-full bg-white dark:bg-white/5 shadow-sm text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<h1 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Search Rides</h1>
+<div class="size-10"></div> <!-- Spacer for centering -->
+</header>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col px-6 pt-4 pb-24 overflow-y-auto">
+<!-- Location Input Group -->
+<div class="relative bg-white dark:bg-input-dark rounded-2xl shadow-soft p-4 mb-6 transition-colors duration-300">
+<!-- Connector Line Visual -->
+<div class="absolute left-[34px] top-[48px] bottom-[48px] w-[2px] border-l-2 border-dashed border-slate-300 dark:border-slate-600 z-0"></div>
+<!-- Pickup Location -->
+<div class="relative z-10 group">
+<label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1 ml-10 uppercase tracking-wider">From</label>
+<div class="flex items-center">
+<div class="absolute left-0 top-[26px] -translate-y-1/2 flex items-center justify-center size-8 text-primary">
+<span class="material-symbols-outlined text-[20px]">radio_button_unchecked</span>
+</div>
+<input class="w-full bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-base font-medium placeholder:text-slate-400 rounded-xl border-none focus:ring-2 focus:ring-primary/20 py-3 pl-10 pr-12 transition-all" placeholder="Current Location" type="text" value="124, 5th Avenue, NY"/>
+<button class="absolute right-2 text-slate-400 hover:text-primary transition-colors p-1">
+<span class="material-symbols-outlined text-[20px]">my_location</span>
+</button>
+</div>
+</div>
+<!-- Swap Button -->
+<div class="relative z-20 flex justify-end -my-3 pr-4 pointer-events-none">
+<button class="pointer-events-auto size-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 border border-white dark:border-input-dark text-primary shadow-sm hover:scale-110 active:scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined text-[18px]">swap_vert</span>
+</button>
+</div>
+<!-- Drop-off Location -->
+<div class="relative z-10 group mt-1">
+<label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1 ml-10 uppercase tracking-wider">To</label>
+<div class="flex items-center">
+<div class="absolute left-0 top-[26px] -translate-y-1/2 flex items-center justify-center size-8 text-rose-500">
+<span class="material-symbols-outlined icon-filled text-[20px]">location_on</span>
+</div>
+<input class="w-full bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-base font-medium placeholder:text-slate-400 rounded-xl border-none focus:ring-2 focus:ring-primary/20 py-3 pl-10 pr-4 transition-all" placeholder="Where to?" type="text"/>
+</div>
+</div>
+</div>
+<!-- Secondary Inputs: Date & Passengers -->
+<div class="flex gap-4 mb-8">
+<!-- Date Picker -->
+<div class="flex-1">
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">When</label>
+<button class="w-full flex items-center justify-between bg-white dark:bg-input-dark p-3.5 rounded-xl shadow-sm border border-transparent focus:border-primary/50 text-left transition-all group">
+<div class="flex items-center gap-3 overflow-hidden">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">calendar_today</span>
+<span class="text-slate-900 dark:text-white font-medium truncate">Now</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
+</button>
+</div>
+<!-- Passengers -->
+<div class="w-1/3 min-w-[120px]">
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Seats</label>
+<button class="w-full flex items-center justify-between bg-white dark:bg-input-dark p-3.5 rounded-xl shadow-sm border border-transparent focus:border-primary/50 text-left transition-all group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">person</span>
+<span class="text-slate-900 dark:text-white font-medium">1</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
+</button>
+</div>
+</div>
+<!-- Recent Searches Section -->
+<div class="flex-1">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-base font-bold text-slate-900 dark:text-white">Recent Places</h3>
+<button class="text-xs font-semibold text-primary hover:text-primary/80 transition-colors">Clear all</button>
+</div>
+<div class="space-y-3">
+<!-- Recent Item 1 -->
+<button class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-white dark:hover:bg-input-dark transition-colors group text-left">
+<div class="flex items-center justify-center size-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-primary/10 group-hover:text-primary transition-colors shrink-0">
+<span class="material-symbols-outlined text-[20px]">history</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-900 dark:text-white truncate">Central Park West</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate">New York, NY, USA</p>
+</div>
+</button>
+<!-- Recent Item 2 -->
+<button class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-white dark:hover:bg-input-dark transition-colors group text-left">
+<div class="flex items-center justify-center size-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-primary/10 group-hover:text-primary transition-colors shrink-0">
+<span class="material-symbols-outlined text-[20px]">work</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-900 dark:text-white truncate">WeWork Office</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate">Broadway, New York</p>
+</div>
+</button>
+<!-- Recent Item 3 -->
+<button class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-white dark:hover:bg-input-dark transition-colors group text-left">
+<div class="flex items-center justify-center size-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-primary/10 group-hover:text-primary transition-colors shrink-0">
+<span class="material-symbols-outlined text-[20px]">home</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-900 dark:text-white truncate">Home</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 truncate">Queens Blvd, NY</p>
+</div>
+</button>
+</div>
+</div>
+</main>
+<!-- Footer Action -->
+<div class="fixed bottom-0 left-0 w-full p-6 bg-gradient-to-t from-background-light via-background-light to-transparent dark:from-background-dark dark:via-background-dark pointer-events-none">
+<button class="w-full pointer-events-auto h-14 bg-primary hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl text-lg font-bold shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5">
+<span>Find Rides</span>
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</body></html>

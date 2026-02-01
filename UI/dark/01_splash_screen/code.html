@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html class="light dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CoRider Splash Screen</title>
+<!-- Fonts and Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display h-screen w-full overflow-hidden flex flex-col items-center justify-center relative selection:bg-primary/20">
+<!-- Decorative Background Blurs -->
+<div class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
+<div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -translate-x-1/3 translate-y-1/3"></div>
+<!-- Main Content Wrapper -->
+<div class="relative z-10 flex flex-col items-center justify-center w-full max-w-sm px-6 gap-8 animate-fade-in">
+<!-- Logo Section (Modified ImageGrid) -->
+<div class="relative group">
+<div class="w-32 h-32 rounded-3xl bg-primary flex items-center justify-center shadow-xl shadow-primary/30 relative overflow-hidden">
+<!-- Background Pattern for texture -->
+<div class="absolute inset-0 opacity-20 bg-cover bg-center" data-alt="Abstract white route lines pattern on indigo background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCJz053FGmfdC3OzRCw1NAqD_To9N3s4QmZXKmM8ZSJX1ApKrGlTjpUt_xqgxBCm3yqmU2FsGhq-NhUAZHdNDoTByGxOen4hlyFmAEegiFvSMx3o4eK48TVEMBa-HKog5YeIQ3UKuuNbDGJYZKB6dBxVTojxbWobrX-eIhoY72eQ2kJgdfXwfJirMEfiN8Af4anyjP-oUuEQ2-qrdrTOpJpDWUXkJ-N5Y4q9qLlyr-wfOCZJa7yBcXi2bpgxxPOoeQtom2rkMsR552i');">
+</div>
+<!-- Main Icon -->
+<span class="material-symbols-outlined text-white text-[64px] relative z-10">
+                    directions_car
+                </span>
+<!-- Accent Icon -->
+<span class="material-symbols-outlined text-white/40 text-[32px] absolute top-3 right-3 z-10">
+                    alt_route
+                </span>
+</div>
+</div>
+<!-- Typography Section -->
+<div class="flex flex-col items-center text-center gap-2">
+<!-- Headline Text -->
+<h1 class="text-primary dark:text-white text-4xl font-extrabold tracking-tight leading-tight">
+                CoRider
+            </h1>
+<!-- Tagline (BodyText) -->
+<p class="text-slate-500 dark:text-slate-400 text-lg font-medium leading-relaxed tracking-wide">
+                Share the route, save the ride
+            </p>
+</div>
+</div>
+<!-- Loading Indicator (ProgressBar) -->
+<div class="absolute bottom-12 w-full max-w-[140px] px-4 flex flex-col items-center gap-3">
+<!-- Minimalist Progress Bar -->
+<div class="w-full h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-1/3 rounded-full animate-pulse"></div>
+</div>
+<!-- Version Text -->
+<p class="text-slate-400 dark:text-slate-600 text-xs font-semibold uppercase tracking-widest">
+            v1.0
+        </p>
+</div>
+</body></html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html class="light dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CoRider - Role Selection</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-gray-100 antialiased selection:bg-primary/20 selection:text-primary">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto shadow-2xl shadow-black/5 bg-background-light dark:bg-background-dark">
+<!-- TopAppBar -->
+<header class="flex items-center justify-between p-6 pb-2">
+<!-- Placeholder for balance or Menu -->
+<div class="size-10 flex items-center justify-center text-gray-800 dark:text-white rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer">
+<span class="material-symbols-outlined">menu</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight text-center text-gray-900 dark:text-white flex-1">CoRider</h2>
+<!-- Placeholder for balance -->
+<div class="size-10"></div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col px-6 pt-4 pb-8">
+<!-- HeadlineText -->
+<div class="mb-8">
+<h1 class="text-[28px] font-bold leading-tight text-center text-gray-900 dark:text-white">
+                    How will you use CoRider today?
+                </h1>
+</div>
+<!-- Cards Container -->
+<div class="flex flex-col gap-6 flex-1 justify-center">
+<!-- Driver Card -->
+<div class="group relative flex flex-col bg-white dark:bg-[#1a2230] rounded-2xl p-6 shadow-sm shadow-gray-200/50 dark:shadow-none border border-transparent hover:border-primary/50 transition-all duration-300 transform active:scale-[0.98]">
+<div class="flex items-start justify-between mb-4">
+<div class="size-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[32px]">directions_car</span>
+</div>
+<!-- Optional selection indicator -->
+<div class="size-6 rounded-full border-2 border-gray-200 dark:border-gray-600 group-hover:border-primary transition-colors"></div>
+</div>
+<div class="flex-1">
+<h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Driver</h3>
+<p class="text-gray-500 dark:text-gray-400 text-base leading-relaxed mb-6">
+                            Offer a ride on your route and lower your commuting costs.
+                        </p>
+</div>
+<button class="w-full h-12 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl text-base shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2">
+<span>Drive Now</span>
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</div>
+<!-- Passenger Card -->
+<div class="group relative flex flex-col bg-white dark:bg-[#1a2230] rounded-2xl p-6 shadow-sm shadow-gray-200/50 dark:shadow-none border border-transparent hover:border-primary/50 transition-all duration-300 transform active:scale-[0.98]">
+<div class="flex items-start justify-between mb-4">
+<div class="size-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[32px]">person_pin_circle</span>
+</div>
+<!-- Optional selection indicator -->
+<div class="size-6 rounded-full border-2 border-gray-200 dark:border-gray-600 group-hover:border-primary transition-colors"></div>
+</div>
+<div class="flex-1">
+<h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Passenger</h3>
+<p class="text-gray-500 dark:text-gray-400 text-base leading-relaxed mb-6">
+                            Find a comfortable ride that matches your schedule.
+                        </p>
+</div>
+<button class="w-full h-12 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl text-base shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2">
+<span>Ride Now</span>
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</div>
+</div>
+</main>
+<!-- MetaText / Footer -->
+<footer class="pb-8 pt-2 px-6 text-center">
+<p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Already have an account? 
+                <a class="text-primary hover:text-blue-600 font-bold ml-1 hover:underline transition-all" href="#">Log in</a>
+</p>
+</footer>
+</div>
+</body></html>

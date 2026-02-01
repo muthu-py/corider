@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ride Results</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .material-symbols-outlined {
+                font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-100 transition-colors duration-200">
+<!-- Main Container -->
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto bg-background-light dark:bg-background-dark shadow-2xl">
+<!-- Top App Bar (Sticky) -->
+<div class="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between transition-colors">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-slate-900 dark:text-white transition-colors">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<h1 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Available Rides</h1>
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-slate-900 dark:text-white transition-colors relative">
+<span class="material-symbols-outlined">tune</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border border-white dark:border-gray-900"></span>
+</button>
+</div>
+<!-- Search Context Summary -->
+<div class="px-4 py-3 bg-background-light dark:bg-background-dark">
+<div class="flex items-center justify-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-gray-800 py-2 px-4 rounded-full shadow-sm border border-gray-100 dark:border-gray-700">
+<span>San Francisco</span>
+<span class="material-symbols-outlined text-base">arrow_right_alt</span>
+<span>Palo Alto</span>
+<span class="w-1 h-1 bg-slate-300 rounded-full mx-1"></span>
+<span class="text-primary font-semibold">Today</span>
+</div>
+</div>
+<!-- Rides List -->
+<div class="flex-1 px-4 pb-8 space-y-4">
+<!-- Card 1: Best Match -->
+<div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-transparent dark:border-gray-700 hover:scale-[1.01] transition-transform duration-200 active:scale-[0.99] cursor-pointer">
+<!-- Header: Badge & Price -->
+<div class="flex justify-between items-start mb-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold">
+<span class="material-symbols-outlined text-sm">verified</span>
+                        98% Match
+                    </span>
+<div class="text-right">
+<p class="text-xl font-extrabold text-primary">$12.50</p>
+</div>
+</div>
+<!-- Route Timeline -->
+<div class="flex gap-4 mb-5">
+<!-- Visual Timeline -->
+<div class="flex flex-col items-center pt-1.5 w-6 shrink-0">
+<div class="w-3 h-3 rounded-full border-[3px] border-primary bg-white dark:bg-gray-800 z-10"></div>
+<div class="w-0.5 h-10 bg-gray-200 dark:bg-gray-600 -my-1"></div>
+<div class="w-3 h-3 rounded-full bg-primary z-10"></div>
+</div>
+<!-- Times & Locations -->
+<div class="flex flex-col gap-4 flex-1">
+<div>
+<div class="flex justify-between items-baseline">
+<h3 class="text-base font-bold text-slate-900 dark:text-white">17:30</h3>
+<span class="text-xs text-slate-400 font-medium">1.2 mi away</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 truncate">Downtown (Union Square)</p>
+</div>
+<div>
+<div class="flex justify-between items-baseline">
+<h3 class="text-base font-bold text-slate-900 dark:text-white">18:00</h3>
+<span class="text-xs text-slate-400 font-medium">Drop-off</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 truncate">University Ave, Palo Alto</p>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<div class="h-px w-full bg-gray-100 dark:bg-gray-700 mb-4"></div>
+<!-- Footer: Driver & Action -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Portrait of driver Sarah" class="w-10 h-10 rounded-full object-cover border border-gray-100 dark:border-gray-600" data-alt="Portrait of a smiling woman driver" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB0np6dlkvVMI-jtDQ3JdOmM84VsxUZQNOYEUl6flGEwxSylwZEbpeye2UkmM2Ffw4JwzalpEFHtcRZ-9XfrDFj8SPPeDxa3NErm2rCUBtq2ipxvjwhKLOz98uupFNOZixrQUUrDQNC9Ly-tZNWEkPOgplawTgTXSLaGFxaH9CFOsUwAJ5Ha-P6ZaWu4NDRbmxKDyn_bCLTadmqaV0K3lKA_xP6YTMEV1QjGp2mDsI5WcyBHDPyQ-_33Gh3mZiNdPQjisgUvweFXlq"/>
+<div class="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 rounded-full p-0.5 shadow-sm">
+<span class="flex items-center justify-center w-4 h-4 bg-yellow-400 rounded-full text-[10px] font-bold text-yellow-900">★</span>
+</div>
+</div>
+<div class="flex flex-col">
+<p class="text-sm font-bold text-slate-900 dark:text-white leading-tight">Sarah M.</p>
+<div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">directions_car</span> Tesla Model 3</span>
+<span class="w-0.5 h-2.5 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
+<span class="flex items-center gap-0.5 text-primary font-medium"><span class="material-symbols-outlined text-[14px]">person</span> 1 left</span>
+</div>
+</div>
+</div>
+<button class="bg-primary hover:bg-blue-700 text-white text-sm font-semibold py-2 px-5 rounded-full transition-colors shadow-lg shadow-blue-500/30">
+                        Book
+                    </button>
+</div>
+</div>
+<!-- Card 2: Economy Option -->
+<div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-transparent dark:border-gray-700 hover:scale-[1.01] transition-transform duration-200 active:scale-[0.99] cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 text-xs font-bold">
+                        85% Match
+                    </span>
+<div class="text-right">
+<p class="text-xl font-extrabold text-primary">$10.00</p>
+</div>
+</div>
+<div class="flex gap-4 mb-5">
+<div class="flex flex-col items-center pt-1.5 w-6 shrink-0">
+<div class="w-3 h-3 rounded-full border-[3px] border-slate-300 dark:border-slate-500 bg-white dark:bg-gray-800 z-10"></div>
+<div class="w-0.5 h-10 bg-gray-200 dark:bg-gray-600 -my-1"></div>
+<div class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-500 z-10"></div>
+</div>
+<div class="flex flex-col gap-4 flex-1">
+<div>
+<div class="flex justify-between items-baseline">
+<h3 class="text-base font-bold text-slate-900 dark:text-white">17:45</h3>
+<span class="text-xs text-slate-400 font-medium">0.5 mi away</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 truncate">Market St &amp; 4th</p>
+</div>
+<div>
+<div class="flex justify-between items-baseline">
+<h3 class="text-base font-bold text-slate-900 dark:text-white">18:25</h3>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 truncate">Stanford Shopping Ctr</p>
+</div>
+</div>
+</div>
+<div class="h-px w-full bg-gray-100 dark:bg-gray-700 mb-4"></div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Portrait of driver David" class="w-10 h-10 rounded-full object-cover border border-gray-100 dark:border-gray-600" data-alt="Portrait of a man driver" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-XTEofyFVGa6c4We0QDVIogoiB3i-PveQLXt3heEfe5Z05CUS2lJdf8gaRDM_NennuPeLcH0US_RjhVFlNZpPs5QKUr0ODEpYL_d7AK4re8BoEPkYDf3vobf3VrIz_OzeFNITnXUdvSDkgXhKgwt_Zdtvi7IZTLkas7D82twAuOlNyM2MR5i6r4U3yAUSnfE0laE_zY9mMjPe9HtqXfaqQTf8gJ941PqG2UsjxE0E5n10WeO4tdgXgtfnAbK7g6arNYUO_HngzpuE"/>
+<div class="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 rounded-full p-0.5 shadow-sm">
+<span class="flex items-center justify-center w-4 h-4 bg-slate-200 dark:bg-slate-600 rounded-full text-[9px] font-bold text-slate-600 dark:text-slate-300">4.7</span>
+</div>
+</div>
+<div class="flex flex-col">
+<p class="text-sm font-bold text-slate-900 dark:text-white leading-tight">David K.</p>
+<div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">directions_car</span> Toyota Camry</span>
+<span class="w-0.5 h-2.5 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">group</span> 3 left</span>
+</div>
+</div>
+</div>
+<button class="bg-primary/10 hover:bg-primary/20 dark:bg-white/10 dark:hover:bg-white/20 text-primary dark:text-white text-sm font-semibold py-2 px-5 rounded-full transition-colors">
+                        Book
+                    </button>
+</div>
+</div>
+<!-- Card 3: Another Option -->
+<div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none border border-transparent dark:border-gray-700 hover:scale-[1.01] transition-transform duration-200 active:scale-[0.99] cursor-pointer opacity-90">
+<div class="flex justify-between items-start mb-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-bold">
+                        92% Match
+                    </span>
+<div class="text-right">
+<p class="text-xl font-extrabold text-primary">$14.00</p>
+</div>
+</div>
+<div class="flex gap-4 mb-5">
+<div class="flex flex-col items-center pt-1.5 w-6 shrink-0">
+<div class="w-3 h-3 rounded-full border-[3px] border-slate-300 dark:border-slate-500 bg-white dark:bg-gray-800 z-10"></div>
+<div class="w-0.5 h-10 bg-gray-200 dark:bg-gray-600 -my-1"></div>
+<div class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-500 z-10"></div>
+</div>
+<div class="flex flex-col gap-4 flex-1">
+<div>
+<div class="flex justify-between items-baseline">
+<h3 class="text-base font-bold text-slate-900 dark:text-white">18:00</h3>
+<span class="text-xs text-slate-400 font-medium">2.0 mi away</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 truncate">SOMA District</p>
+</div>
+<div>
+<div class="flex justify-between items-baseline">
+<h3 class="text-base font-bold text-slate-900 dark:text-white">18:30</h3>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 truncate">Stanford Campus</p>
+</div>
+</div>
+</div>
+<div class="h-px w-full bg-gray-100 dark:bg-gray-700 mb-4"></div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img alt="Portrait of driver Emily" class="w-10 h-10 rounded-full object-cover border border-gray-100 dark:border-gray-600" data-alt="Portrait of a woman driver in business attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfrvvYGk5Gyy07b4AWgLA2mPgnzTw0H3kccZe8ZdkUYB9wVyDIQLo_t3J6C3osSCzg3rOpuJWKDkC6U4w6mTPCafF_MluaboCbTaDKXRY6MpGdU9T3O8wmCMdlUH67gFtEP0Xo7SkFGcdmS7xP7WpMs49mfcfyM4NHkHaUKeJbbOvJBjYYWEecA5f2fOmxEQwc19frmR24ivhBDXgjh4OI__459iLZ14uPnCwVvC0Fgq3UiGYF2Y_oQ2BbfDMi13-F-CfI3eFmvcw2"/>
+<div class="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 rounded-full p-0.5 shadow-sm">
+<span class="flex items-center justify-center w-4 h-4 bg-yellow-400 rounded-full text-[10px] font-bold text-yellow-900">★</span>
+</div>
+</div>
+<div class="flex flex-col">
+<p class="text-sm font-bold text-slate-900 dark:text-white leading-tight">Emily R.</p>
+<div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">directions_car</span> BMW i3</span>
+<span class="w-0.5 h-2.5 bg-slate-300 dark:bg-slate-600 rounded-full"></span>
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-[14px]">group</span> 2 left</span>
+</div>
+</div>
+</div>
+<button class="bg-primary/10 hover:bg-primary/20 dark:bg-white/10 dark:hover:bg-white/20 text-primary dark:text-white text-sm font-semibold py-2 px-5 rounded-full transition-colors">
+                        Book
+                    </button>
+</div>
+</div>
+<!-- End of List Indicator -->
+<div class="pt-4 text-center">
+<p class="text-xs text-slate-400 dark:text-slate-600 font-medium uppercase tracking-widest">End of Results</p>
+</div>
+</div>
+<!-- Floating Action Button (Optional - Search New) -->
+<div class="fixed bottom-6 right-6 lg:hidden">
+<button class="flex items-center justify-center w-14 h-14 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full shadow-xl hover:scale-105 transition-transform">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</div>
+</body></html>

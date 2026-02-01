@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CoRider - Active Ride Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a2332",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for cleaner mobile look */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#0d121b] dark:text-gray-100 font-display transition-colors duration-200">
+<div class="relative mx-auto flex h-full min-h-screen w-full max-w-[480px] flex-col overflow-x-hidden bg-background-light dark:bg-background-dark shadow-2xl">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-10 flex items-center justify-between bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md p-4 pb-2 pt-6">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full text-[#0d121b] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="text-[#0d121b] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Dashboard</h2>
+<div class="flex items-center justify-end gap-2">
+<button class="flex size-10 items-center justify-center rounded-full text-[#0d121b] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-500 ring-2 ring-background-light dark:ring-background-dark"></span>
+</button>
+<button class="flex size-10 items-center justify-center rounded-full text-primary hover:bg-primary/10 transition">
+<span class="material-symbols-outlined font-semibold">shield</span>
+</button>
+</div>
+</header>
+<!-- Main Content Scrollable Area -->
+<main class="flex-1 px-4 py-2 pb-24">
+<!-- Status Chip -->
+<div class="flex justify-center mb-6 mt-2">
+<div class="flex h-9 items-center justify-center gap-x-2 rounded-full bg-green-100 dark:bg-green-900/30 pl-4 pr-5 shadow-sm ring-1 ring-green-200 dark:ring-green-800">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+</span>
+<p class="text-green-800 dark:text-green-300 text-sm font-bold leading-normal tracking-wide">ACTIVE RIDE</p>
+</div>
+</div>
+<!-- Main Ride Card -->
+<div class="group/card relative overflow-hidden rounded-2xl bg-surface-light dark:bg-surface-dark shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-gray-100 dark:border-gray-800">
+<!-- Map Preview Background (Top half of card) -->
+<div class="relative h-40 w-full overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Blurred map view of city streets with route line" data-location="San Francisco" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBvjgYTzHdX-m4g8Bd-XMMZkMoiQ1TC-nlTwfXBZh4zdyTT174A4cZpe4GQUiCBAzFZC26i-kjdCAB9zKW7L5z2sCQGSG06ruVXUCs4gJsvUo18RZVmjKh23RkscAL-IpJdyPOYZVB4esWXqK06_dQnMgNYMxrqFrlvhhnG0W46AwdzrkH0aIJxX0knZjpwAktKJYOUSvTpRv68FF0L3FZ-9ha8XvWwOUhaIKKTzk1tkLQdQGjucK6WBrw5_9fDChpNjkEsF8o_XzlI");'>
+</div>
+<!-- Overlay Gradient -->
+<div class="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-surface-light dark:to-surface-dark"></div>
+<!-- Floating ETA Badge on Map -->
+<div class="absolute top-4 right-4 bg-surface-light dark:bg-surface-dark/90 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">schedule</span>
+<span class="text-sm font-bold text-gray-900 dark:text-white">15 min</span>
+</div>
+</div>
+<!-- Card Content -->
+<div class="relative p-5 -mt-6 rounded-t-2xl bg-surface-light dark:bg-surface-dark">
+<!-- Trip Header Info -->
+<div class="flex justify-between items-end mb-6">
+<div>
+<p class="text-primary text-sm font-semibold uppercase tracking-wider mb-1">Current Trip</p>
+<h3 class="text-3xl font-extrabold text-[#0d121b] dark:text-white tracking-tight">10:45 AM</h3>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Estimated Arrival</p>
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-800/50">
+<span class="material-symbols-outlined text-primary text-[16px]">airline_seat_recline_normal</span>
+<span class="text-primary font-bold text-sm">2/4</span>
+</div>
+<span class="text-xs text-gray-400 dark:text-gray-500 mt-1">Seats Filled</span>
+</div>
+</div>
+<!-- Divider -->
+<div class="h-px w-full bg-gray-100 dark:bg-gray-800 mb-6"></div>
+<!-- Timeline Route -->
+<div class="grid grid-cols-[24px_1fr] gap-x-4 mb-6">
+<!-- Visual Line -->
+<div class="flex flex-col items-center pt-1.5 h-full">
+<div class="size-3 rounded-full border-[3px] border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-sm z-10"></div>
+<div class="w-0.5 bg-gradient-to-b from-gray-300 via-gray-300 to-primary dark:from-gray-700 dark:via-gray-700 dark:to-primary my-1 grow rounded-full"></div>
+<div class="size-4 rounded-full bg-primary shadow-md shadow-primary/30 z-10 flex items-center justify-center">
+<div class="size-1.5 bg-white rounded-full"></div>
+</div>
+</div>
+<!-- Text Details -->
+<div class="flex flex-col justify-between h-full gap-6">
+<!-- Source -->
+<div class="opacity-60 grayscale transition-all duration-300 hover:grayscale-0 hover:opacity-100">
+<p class="text-[#0d121b] dark:text-white text-base font-semibold leading-tight">124 Market St</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-normal">San Francisco • Picked up</p>
+</div>
+<!-- Destination -->
+<div>
+<p class="text-[#0d121b] dark:text-white text-lg font-bold leading-tight">4005 3rd St</p>
+<p class="text-primary text-sm font-medium">Palo Alto • Drop off</p>
+</div>
+</div>
+</div>
+<!-- Passenger Avatars -->
+<div class="flex items-center justify-between bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl border border-gray-100 dark:border-gray-800/50">
+<div class="flex items-center gap-3">
+<div class="flex -space-x-3 rtl:space-x-reverse">
+<img alt="Sarah avatar" class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-700 object-cover" data-alt="Portrait of a smiling woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdhi4RA8Q77QHi_LPHcNSB8bs2D_jLsFSuG_dZjmb-DuJRRubo14OXJfvJziiU7ZRaKqrz9P4SBvaI3dT4Nh2n3DPmA5BNr6Rbb81dV6w7wmoQJ54b2QYWaKwhr5BXK-CCk4j04e50YLA0ovRLObv2JpTPN-zRUN17Pz8T4PuHLFaP88mp5Q0tEKZ8TGtGiueut-bjGfzHYOIl4MkI7fj69mWRxidJJYu1s3ntZD4fPPNFsciG8u1c_k57KLRGxXEAvW_qozztnDWX"/>
+<img alt="Mike avatar" class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-700 object-cover" data-alt="Portrait of a man with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCInLdkO-zCizLIopwb0NuHCV_w0QtoUGXQoFEhcWcJ3q4bIgYiBsMlk_-Ta-zbl8xLUqfsx12bgD9seDefVpFe9WmaE7NB4uV-DwmxLa-peKroVPkpsH8ZIicfHMO0mP1DtR2_VOO50gFxuxbEX21xjJs6oFpSNYueua2i2WzEagofHsLYsXeBhpz_EfL9Gbz_8-Mqtk9Hpd4QlPNK7RA0ypV-z_NSFu6vNuOMHSQQpBgc9t_BsTdcUI7paNcTr1fLkUrgMJ9OJfBD"/>
+</div>
+<div class="text-sm">
+<span class="text-[#0d121b] dark:text-white font-semibold">Sarah &amp; Mike</span>
+<span class="text-gray-500 dark:text-gray-400 block text-xs">Passengers on board</span>
+</div>
+</div>
+<button class="text-gray-400 hover:text-primary transition">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Stats Row -->
+<div class="grid grid-cols-2 gap-3 mt-4">
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between h-24">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-gray-400">payments</span>
+<span class="text-xs font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded">+15%</span>
+</div>
+<div>
+<p class="text-2xl font-bold text-[#0d121b] dark:text-white">$42.50</p>
+<p class="text-xs text-gray-500 dark:text-gray-400">Earned so far</p>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between h-24">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-gray-400">speed</span>
+</div>
+<div>
+<p class="text-2xl font-bold text-[#0d121b] dark:text-white">28 mi</p>
+<p class="text-xs text-gray-500 dark:text-gray-400">Total distance</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-20 mx-auto max-w-[480px]">
+<!-- Gradient Fade -->
+<div class="h-12 w-full bg-gradient-to-t from-background-light dark:from-background-dark to-transparent pointer-events-none"></div>
+<div class="bg-background-light dark:bg-background-dark px-4 pb-6 pt-2">
+<div class="flex gap-3 items-center">
+<button class="flex-none flex items-center justify-center w-14 h-14 rounded-xl bg-gray-100 dark:bg-gray-800 text-[#0d121b] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition shadow-sm">
+<span class="material-symbols-outlined">call</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-2 h-14 rounded-xl bg-primary text-white font-bold text-lg shadow-[0_4px_14px_0_rgba(19,91,236,0.39)] hover:bg-blue-600 hover:shadow-[0_6px_20px_rgba(19,91,236,0.23)] hover:-translate-y-0.5 transition-all duration-200">
+<span class="material-symbols-outlined">navigation</span>
+<span>Navigate</span>
+</button>
+<button class="flex-none flex items-center justify-center w-14 h-14 rounded-xl bg-gray-100 dark:bg-gray-800 text-[#0d121b] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition shadow-sm">
+<span class="material-symbols-outlined">menu_open</span>
+</button>
+</div>
+<!-- Home Indicator Safe Area Placeholder -->
+<div class="h-1 w-1/3 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mt-6"></div>
+</div>
+</div>
+</div>
+</body></html>
