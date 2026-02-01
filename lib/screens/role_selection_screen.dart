@@ -1,5 +1,6 @@
 import 'package:co_rider/theme/theme_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:co_rider/services/auth_service.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
@@ -20,6 +21,15 @@ class RoleSelectionScreen extends StatelessWidget {
              onPressed: () {
                ThemeController().toggleTheme();
              },
+          ),
+          IconButton(
+            icon: Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
+            onPressed: () async {
+              await AuthService().signOut();
+              if (context.mounted) {
+                 Navigator.pushReplacementNamed(context, '/login');
+              }
+            },
           ),
           const SizedBox(width: 8), 
         ],

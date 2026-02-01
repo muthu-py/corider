@@ -10,7 +10,20 @@ import 'package:co_rider/theme/light_theme.dart';
 import 'package:co_rider/theme/theme_controller.dart'; // Added this import
 import 'package:flutter/material.dart';
 
-void main() {
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:co_rider/screens/login_screen.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await dotenv.load(fileName: ".env");
+
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL'] ?? '', 
+    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+  );
+
   runApp(const MyApp());
 }
 
@@ -26,9 +39,10 @@ class MyApp extends StatelessWidget {
           title: 'CoRider',
           theme: lightTheme,
           darkTheme: darkTheme,
-          themeMode: themeMode, // Changed to use the themeMode from ValueListenableBuilder
+          themeMode: themeMode,
           home: const SplashScreen(),
           routes: {
+            '/login': (context) => const LoginScreen(),
             '/role_selection': (context) => const RoleSelectionScreen(),
             '/create_ride': (context) => const CreateRideScreen(),
             '/active_ride_dashboard': (context) => const ActiveRideDashboardScreen(),
@@ -36,7 +50,7 @@ class MyApp extends StatelessWidget {
             '/ride_results': (context) => const RideResultsScreen(),
             '/ride_details': (context) => const RideDetailsScreen(),
           },
-          debugShowCheckedModeBanner: false, // Added this line
+          debugShowCheckedModeBanner: false,
         );
       },
     );
