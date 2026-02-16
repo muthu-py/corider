@@ -1,271 +1,302 @@
+import 'package:co_rider/models/location_suggestion.dart';
+import 'package:co_rider/screens/ride_results_screen.dart';
+import 'package:co_rider/services/ride_service.dart';
 import 'package:co_rider/theme/theme_controller.dart';
+import 'package:co_rider/widgets/location_autocomplete_field.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class SearchRidesScreen extends StatelessWidget {
+class SearchRidesScreen extends StatefulWidget {
   const SearchRidesScreen({super.key});
+
+  @override
+  State<SearchRidesScreen> createState() => _SearchRidesScreenState();
+}
+
+class _SearchRidesScreenState extends State<SearchRidesScreen> {
+  final RideService _rideService = RideService();
+  final TextEditingController _fromController = TextEditingController();
+  final TextEditingController _toController = TextEditingController();
+
+  LocationSuggestion? _fromLocation;
+  LocationSuggestion? _toLocation;
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
+
+  int _timeWindowMinutes = 60;
+  int _seats = 1;
+  bool _isSearching = false;
+
+  // Internal-only radius filter (not shown in UI)
+  static const double _internalRadiusKm = 2.0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _fromController.addListener(() {
+      if (_fromLocation != null && _fromController.text != _fromLocation!.name) {
+        setState(() => _fromLocation = null);
+      }
+    });
+
+    _toController.addListener(() {
+      if (_toLocation != null && _toController.text != _toLocation!.name) {
+        setState(() => _toLocation = null);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _fromController.dispose();
+    _toController.dispose();
+    super.dispose();
+  }
+
+  DateTime? _selectedDepartureDateTime() {
+    if (_selectedDate == null || _selectedTime == null) return null;
+    return DateTime(
+      _selectedDate!.year,
+      _selectedDate!.month,
+      _selectedDate!.day,
+      _selectedTime!.hour,
+      _selectedTime!.minute,
+    );
+  }
+
+  Future<void> _pickDateTime() async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 30)),
+    );
+    if (pickedDate == null || !mounted) return;
+
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime ?? TimeOfDay.now(),
+    );
+    if (pickedTime == null) return;
+
+    setState(() {
+      _selectedDate = pickedDate;
+      _selectedTime = pickedTime;
+    });
+  }
+
+  Future<void> _searchRides() async {
+    final departure = _selectedDepartureDateTime();
+    if (_fromLocation == null || _toLocation == null || departure == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Select from, to and departure date/time first.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isSearching = true);
+
+    try {
+      final rides = await _rideService.searchRides(
+        source: _fromLocation!,
+        destination: _toLocation!,
+        departureTime: departure,
+        maxDistanceKm: _internalRadiusKm,
+        timeWindow: Duration(minutes: _timeWindowMinutes),
+        requiredSeats: _seats,
+      );
+
+      if (!mounted) return;
+
+      Navigator.pushNamed(
+        context,
+        '/ride_results',
+        arguments: RideResultsArgs(
+          rides: rides,
+          from: _fromLocation!,
+          to: _toLocation!,
+          departureTime: departure,
+          timeWindowMinutes: _timeWindowMinutes,
+          seats: _seats,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Search failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSearching = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
-    final surfaceColor = Theme.of(context).cardTheme.color;
-    final inputColor = isDark ? const Color(0xFF1C2536) : Colors.white;
     final borderColor = isDark ? const Color(0xFF1E293B) : Colors.grey[200]!;
-    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
-    final hintColor = Colors.grey[400]!;
+    final surfaceColor = isDark ? const Color(0xFF1C2536) : Colors.white;
+    final hintColor = Colors.grey[500]!;
+    final departure = _selectedDepartureDateTime();
 
     return Scaffold(
-      backgroundColor: backgroundColor,
-      body: Stack(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: const Text('Search Rides'),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+            onPressed: () => ThemeController().toggleTheme(),
+          ),
+        ],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
         children: [
-          SafeArea(
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: surfaceColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor),
+            ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                  child: Row(
-                    children: [
-                      _buildCircleButton(
-                        context,
-                        icon: Icons.arrow_back_ios_new,
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      Expanded(
-                        child: Text(
-                          'Search Rides',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                              ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      children: [
+                        const SizedBox(height: 12),
+                        Icon(
+                          Icons.radio_button_unchecked,
+                          size: 12,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
+                        Container(
+                          width: 2,
+                          height: 80,
+                          color: isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFE2E8F0),
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                        ),
+                        Icon(
+                          Icons.location_on,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          LocationAutocompleteField(
+                            label: 'Leaving From',
+                            controller: _fromController,
+                            prefixIcon: Icons.my_location,
+                            onSelected: (s) => setState(() => _fromLocation = s),
+                          ),
+                          const SizedBox(height: 16),
+                          LocationAutocompleteField(
+                            label: 'Going To',
+                            controller: _toController,
+                            prefixIcon: Icons.location_on,
+                            prefixIconColor: Colors.redAccent,
+                            onSelected: (s) => setState(() => _toLocation = s),
+                          ),
+                        ],
                       ),
-                       IconButton(
-                        icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
-                        onPressed: () {
-                           ThemeController().toggleTheme();
-                        },
-                      ),
-                    ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Divider(color: borderColor, height: 1),
+                const SizedBox(height: 20),
+                const Text(
+                  'Departure Time',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                InkWell(
+                  onTap: _pickDateTime,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF101622) : const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: borderColor),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        Text(
+                          departure == null
+                              ? 'Select Date & Time'
+                              : DateFormat('d/M/y • h:mm a').format(departure),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: departure == null ? hintColor : null,
+                          ),
+                        ),
+                        const Spacer(),
+                        Icon(Icons.calendar_month, color: hintColor),
+                      ],
+                    ),
                   ),
                 ),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 100),
-                    children: [
-                      // Location Input Group
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF1C2536) : Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 20,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Stack(
-                          children: [
-                            // Connector Line
-                            Positioned(
-                              left: 17,
-                              top: 40,
-                              bottom: 40,
-                              child: Container(
-                                width: 2,
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    left: BorderSide(
-                                      color: isDark ? Colors.grey[700]! : Colors.grey[300]!,
-                                      width: 2,
-                                      style: BorderStyle.solid, // Dashed is hard in standard container, solid is acceptable approximation or need custom painter.
-                                      // Design says dashed line.
-                                    ),
-                                  ),
-                                ),
-                                child: CustomPaint(
-                                  painter: DashedLinePainter(
-                                    color: isDark ? Colors.grey[700]! : Colors.grey[300]!,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Column(
-                              children: [
-                                // From Input
-                                _buildLocationInput(
-                                  context,
-                                  label: 'FROM',
-                                  icon: Icons.radio_button_unchecked,
-                                  iconColor: Theme.of(context).colorScheme.primary,
-                                  value: '124, 5th Avenue, NY',
-                                  showMyLocation: true,
-                                ),
-                                // Swap Button (Visual only here, positioned via Stack in HTML but simplified)
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  heightFactor: 0.5,
-                                  child: Container(
-                                    width: 32,
-                                    height: 32,
-                                    margin: const EdgeInsets.only(right: 16, bottom: 8, top: 8),
-                                    decoration: BoxDecoration(
-                                      color: isDark ? Colors.grey[700] : Colors.grey[100],
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: isDark ? const Color(0xFF1C2536) : Colors.white,
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Icons.swap_vert,
-                                      size: 18,
-                                      color: Theme.of(context).colorScheme.primary,
-                                    ),
-                                  ),
-                                ),
-                                // To Input
-                                _buildLocationInput(
-                                  context,
-                                  label: 'TO',
-                                  icon: Icons.location_on,
-                                  iconColor: Colors.redAccent,
-                                  placeholder: 'Where to?',
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildSimpleDropdown<int>(
+                        label: 'Time Window',
+                        value: _timeWindowMinutes,
+                        items: const [15, 30, 60, 90, 120],
+                        textBuilder: (v) => '±$v min',
+                        onChanged: (v) => setState(() => _timeWindowMinutes = v),
                       ),
-                      const SizedBox(height: 32),
-                      // Secondary Inputs
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: _buildDropdownInput(
-                              context,
-                              label: 'When',
-                              value: 'Now',
-                              icon: Icons.calendar_today,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            flex: 1,
-                            child: _buildDropdownInput(
-                              context,
-                              label: 'Seats',
-                              value: '1',
-                              icon: Icons.person,
-                            ),
-                          ),
-                        ],
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildSimpleDropdown<int>(
+                        label: 'Passengers',
+                        value: _seats,
+                        items: const [1, 2, 3, 4],
+                        textBuilder: (v) => '$v',
+                        onChanged: (v) => setState(() => _seats = v),
                       ),
-                      const SizedBox(height: 32),
-                      // Recent Searches
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Recent Places',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          TextButton(
-                            onPressed: () {},
-                            child: Text(
-                              'Clear all',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      _buildRecentItem(
-                        context,
-                        icon: Icons.history,
-                        title: 'Central Park West',
-                        subtitle: 'New York, NY, USA',
-                      ),
-                      _buildRecentItem(
-                        context,
-                        icon: Icons.work,
-                        title: 'WeWork Office',
-                        subtitle: 'Broadway, New York',
-                      ),
-                      _buildRecentItem(
-                        context,
-                        icon: Icons.home,
-                        title: 'Home',
-                        subtitle: 'Queens Blvd, NY',
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          // Footer Action
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    backgroundColor.withOpacity(0.0),
-                    backgroundColor,
-                    backgroundColor,
-                  ],
-                  stops: const [0.0, 0.4, 1.0],
-                ),
-              ),
-              child: SafeArea(
-                top: false,
-                child: ElevatedButton(
-                  onPressed: () {
-                     Navigator.pushNamed(context, '/ride_results');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 8,
-                    shadowColor: Colors.blue.withOpacity(0.3),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        'Find Rides',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(Icons.search),
-                    ],
-                  ),
-                ),
-              ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: _isSearching ? null : _searchRides,
+            icon: _isSearching
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.search),
+            label: Text(_isSearching ? 'Searching...' : 'Find Rides'),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
             ),
           ),
         ],
@@ -273,246 +304,49 @@ class SearchRidesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCircleButton(BuildContext context,
-      {required IconData icon, required VoidCallback onPressed}) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.05) : Colors.white,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Icon(
-          icon,
-          size: 20,
-          color: isDark ? Colors.white : Colors.black,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLocationInput(
-    BuildContext context, {
+  Widget _buildSimpleDropdown<T>({
     required String label,
-    required IconData icon,
-    required Color iconColor,
-    String? value,
-    String? placeholder,
-    bool showMyLocation = false,
+    required T value,
+    required List<T> items,
+    required String Function(T) textBuilder,
+    required void Function(T) onChanged,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 40, bottom: 4),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[500],
-              letterSpacing: 1.0,
-            ),
-          ),
-        ),
-        Stack(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                // No border, just background
-              ),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: Center(
-                      child: Icon(icon, size: 20, color: iconColor),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Container(
-                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                       decoration: BoxDecoration(
-                         color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey[50], 
-                         borderRadius: BorderRadius.circular(12),
-                       ),
-                       child: Text(
-                        value ?? placeholder ?? '',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: value != null
-                              ? (isDark ? Colors.white : Colors.black)
-                              : Colors.grey[400],
-                        ),
-                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (showMyLocation)
-              Positioned(
-                right: 16,
-                top: 0,
-                bottom: 0,
-                child: Icon(
-                  Icons.my_location,
-                  size: 20,
-                  color: Colors.grey[400],
-                ),
-              ),
-          ],
-        ),
-      ],
-    );
-  }
+    final borderColor = isDark ? const Color(0xFF1E293B) : Colors.grey[200]!;
 
-  Widget _buildDropdownInput(BuildContext context,
-      {required String label, required String value, required IconData icon}) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: isDark ? Colors.grey[300] : Colors.grey[700],
-          ),
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1C2536) : Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            color: isDark ? const Color(0xFF101622) : const Color(0xFFF8FAFC),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: borderColor),
           ),
-          child: Row(
-            children: [
-              Icon(icon, size: 20, color: Colors.grey[400]),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  value,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: isDark ? Colors.white : Colors.black,
+          child: DropdownButton<T>(
+            value: value,
+            isExpanded: true,
+            underline: const SizedBox.shrink(),
+            items: items
+                .map(
+                  (item) => DropdownMenuItem<T>(
+                    value: item,
+                    child: Text(textBuilder(item)),
                   ),
-                ),
-              ),
-              Icon(Icons.expand_more, size: 20, color: Colors.grey[400]),
-            ],
+                )
+                .toList(),
+            onChanged: (v) {
+              if (v != null) onChanged(v);
+            },
           ),
         ),
       ],
     );
   }
-
-  Widget _buildRecentItem(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return InkWell(
-      onTap: () {},
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: isDark ? Colors.grey[800] : Colors.grey[100],
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                size: 20,
-                color: Colors.grey[500],
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[500],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class DashedLinePainter extends CustomPainter {
-  final Color color;
-  const DashedLinePainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-
-    final dashWidth = 4.0;
-    final dashSpace = 4.0;
-    double startY = 0;
-
-    while (startY < size.height) {
-      canvas.drawLine(
-        Offset(0, startY),
-        Offset(0, startY + dashWidth),
-        paint,
-      );
-      startY += dashWidth + dashSpace;
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

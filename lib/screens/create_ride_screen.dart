@@ -1,5 +1,10 @@
 import 'dart:ui';
+import 'package:co_rider/models/ride.dart';
+import 'package:co_rider/models/location_suggestion.dart';
+import 'package:co_rider/services/auth_service.dart';
+import 'package:co_rider/services/ride_service.dart';
 import 'package:co_rider/theme/theme_controller.dart';
+import 'package:co_rider/widgets/location_autocomplete_field.dart';
 import 'package:flutter/material.dart';
 
 class CreateRideScreen extends StatefulWidget {
@@ -13,14 +18,47 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
   final TextEditingController _fromController = TextEditingController(text: 'Downtown Market St.');
   final TextEditingController _toController = TextEditingController();
   
-  // Simple state to track form validity
+  final RideService _rideService = RideService();
+  final AuthService _authService = AuthService();
+
+  // Form State
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
+  int _selectedSeats = 3;
+  double _price = 24.0;
+  bool _noSmoking = false;
+  bool _petsAllowed = true;
+  bool _music = false;
+
+  LocationSuggestion? _sourceLocation;
+  LocationSuggestion? _destinationLocation;
+
+  bool _isLoading = false;
   bool _isValid = false;
 
   @override
   void initState() {
     super.initState();
-    _fromController.addListener(_validateForm);
-    _toController.addListener(_validateForm);
+    _fromController.addListener(() {
+      if (_sourceLocation != null && _fromController.text != _sourceLocation!.name) {
+        setState(() {
+          _sourceLocation = null;
+          _validateForm();
+        });
+      } else {
+        _validateForm();
+      }
+    });
+    _toController.addListener(() {
+      if (_destinationLocation != null && _toController.text != _destinationLocation!.name) {
+        setState(() {
+          _destinationLocation = null;
+          _validateForm();
+        });
+      } else {
+        _validateForm();
+      }
+    });
   }
 
   @override
@@ -32,8 +70,102 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
 
   void _validateForm() {
     setState(() {
-      _isValid = _fromController.text.isNotEmpty && _toController.text.isNotEmpty;
+      _isValid = _fromController.text.isNotEmpty && 
+                 _toController.text.isNotEmpty &&
+                 _sourceLocation != null &&
+                 _destinationLocation != null &&
+                 _selectedDate != null &&
+                 _selectedTime != null;
     });
+  }
+
+  Future<DateTime?> _selectDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+      _validateForm();
+    }
+    return picked;
+  }
+
+  Future<TimeOfDay?> _selectTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null && picked != _selectedTime) {
+      setState(() {
+        _selectedTime = picked;
+      });
+      _validateForm();
+    }
+    return picked;
+  }
+
+  Future<void> _submitRide() async {
+    if (!_isValid) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final user = _authService.currentUser;
+      if (user == null) {
+        throw 'User not logged in';
+      }
+
+      // Combine date and time
+      final DateTime departureTime = DateTime(
+        _selectedDate!.year,
+        _selectedDate!.month,
+        _selectedDate!.day,
+        _selectedTime!.hour,
+        _selectedTime!.minute,
+      );
+
+      final ride = Ride(
+        driverId: user.id,
+        sourceName: _sourceLocation!.name,
+        sourceLat: _sourceLocation!.lat, 
+        sourceLon: _sourceLocation!.lon,
+        destinationName: _destinationLocation!.name,
+        destinationLat: _destinationLocation!.lat,
+        destinationLon: _destinationLocation!.lon,
+        departureTime: departureTime,
+        totalSeats: _selectedSeats,
+        availableSeats: _selectedSeats,
+        status: RideStatus.active,
+      );
+
+      await _rideService.createRide(ride);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ride published successfully!'), backgroundColor: Colors.green),
+        );
+        Navigator.pop(context); // Go back to role selection or dashboard
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error creating ride: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -80,7 +212,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
-                              ),
+                               ),
                         ),
                       ),
                        // Theme Toggle
@@ -97,7 +229,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                   child: ListView(
                     padding: const EdgeInsets.only(bottom: 100), // Space for bottom bar
                     children: [
-                      // Map Preview
+                      // Map Preview (Static for now)
                       Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Container(
@@ -106,7 +238,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color: Colors.black.withValues(alpha: 0.05),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -126,8 +258,8 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
                                     colors: [
-                                      Colors.black.withOpacity(0.05),
-                                      Colors.black.withOpacity(0.2),
+                                      Colors.black.withValues(alpha: 0.05),
+                                      Colors.black.withValues(alpha: 0.2),
                                     ],
                                   ),
                                 ),
@@ -141,7 +273,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                                     borderRadius: BorderRadius.circular(8),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
+                                        color: Colors.black.withValues(alpha: 0.1),
                                         blurRadius: 4,
                                         offset: const Offset(0, 2),
                                       ),
@@ -208,54 +340,76 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                                     ],
                                   ),
                                   const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        _buildInput(
-                                          context,
-                                          label: 'Leaving From',
-                                          controller: _fromController,
-                                          placeholder: 'Enter location',
-                                        ),
-                                        const SizedBox(height: 16),
-                                        _buildInput(
-                                          context,
-                                          label: 'Going To',
-                                          controller: _toController,
-                                          placeholder: 'Enter destination',
-                                        ),
-                                      ],
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          LocationAutocompleteField(
+                                            label: 'Leaving From',
+                                            controller: _fromController,
+                                            prefixIcon: Icons.my_location, // Or just use default
+                                            onSelected: (suggestion) {
+                                              setState(() {
+                                                _sourceLocation = suggestion;
+                                                _validateForm();
+                                              });
+                                            },
+                                          ),
+                                          const SizedBox(height: 16),
+                                          LocationAutocompleteField(
+                                            label: 'Going To',
+                                            controller: _toController,
+                                            prefixIcon: Icons.location_on,
+                                            prefixIconColor: Colors.redAccent,
+                                            onSelected: (suggestion) {
+                                              setState(() {
+                                                _destinationLocation = suggestion;
+                                                _validateForm();
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
                                 ],
                               ),
                               const SizedBox(height: 24),
                               Divider(color: borderColor, height: 1),
                               const SizedBox(height: 24),
+                              
                               // Date & Time
                               _buildLabel(context, 'Departure Time'),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: isDark ? const Color(0xFF101622) : const Color(0xFFF8FAFC),
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: borderColor),
-                                ),
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                child: Row(
-                                  children: [
-                                    // Placeholder for date picker
-                                    Text(
-                                      'Select Date & Time', // Or leave empty/ use value if provided
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          color: hintColor), 
-                                    ),
-                                    const Spacer(),
-                                    Icon(Icons.calendar_month, color: hintColor),
-                                  ],
+                              InkWell(
+                                onTap: () async {
+                                  final date = await _selectDate();
+                                  if (date != null) {
+                                    await _selectTime();
+                                  }
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: isDark ? const Color(0xFF101622) : const Color(0xFFF8FAFC),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: borderColor),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        _selectedDate == null || _selectedTime == null
+                                            ? 'Select Date & Time'
+                                            : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year} at ${_selectedTime!.format(context)}',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            color: _selectedDate == null ? hintColor : textColor), 
+                                      ),
+                                      const Spacer(),
+                                      Icon(Icons.calendar_month, color: hintColor),
+                                    ],
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 24),
+                              
                               // Seats & Price Row
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -277,10 +431,10 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              _buildSeatOption(context, '1', false),
-                                              _buildSeatOption(context, '2', false),
-                                              _buildSeatOption(context, '3', true),
-                                              _buildSeatOption(context, '4', false),
+                                              _buildSeatOption(context, '1', 1),
+                                              _buildSeatOption(context, '2', 2),
+                                              _buildSeatOption(context, '3', 3),
+                                              _buildSeatOption(context, '4', 4),
                                             ],
                                           ),
                                         ),
@@ -312,11 +466,24 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                                                 ),
                                               ),
                                               const SizedBox(width: 4),
-                                              Text(
-                                                '24',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: textColor,
+                                              Expanded(
+                                                child: TextField(
+                                                  keyboardType: TextInputType.number,
+                                                  controller: TextEditingController(text: _price.toStringAsFixed(0)),
+                                                  onChanged: (val) {
+                                                    setState(() {
+                                                      _price = double.tryParse(val) ?? 0;
+                                                    });
+                                                  },
+                                                  decoration: const InputDecoration(
+                                                    border: InputBorder.none,
+                                                    isDense: true,
+                                                    contentPadding: EdgeInsets.zero,
+                                                  ),
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: textColor,
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -328,15 +495,25 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                                 ],
                               ),
                               const SizedBox(height: 24),
+                              
                               // Preferences
                               _buildLabel(context, 'Preferences'),
                               Wrap(
                                 spacing: 8,
                                 runSpacing: 8,
                                 children: [
-                                  _buildChip(context, Icons.smoke_free, 'No Smoking', false),
-                                  _buildChip(context, Icons.pets, 'Pets Allowed', true),
-                                  _buildChip(context, Icons.music_note, 'Music', false),
+                                  InkWell(
+                                    onTap: () => setState(() => _noSmoking = !_noSmoking),
+                                    child: _buildChip(context, Icons.smoke_free, 'No Smoking', _noSmoking)
+                                  ),
+                                  InkWell(
+                                    onTap: () => setState(() => _petsAllowed = !_petsAllowed),
+                                    child: _buildChip(context, Icons.pets, 'Pets Allowed', _petsAllowed)
+                                  ),
+                                  InkWell(
+                                    onTap: () => setState(() => _music = !_music),
+                                    child: _buildChip(context, Icons.music_note, 'Music', _music)
+                                  ),
                                 ],
                               ),
                             ],
@@ -378,47 +555,51 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.95),
+                    color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.95),
                     border: Border(
                       top: BorderSide(
-                        color: borderColor.withOpacity(0.5),
+                        color: borderColor.withValues(alpha: 0.5),
                       ),
                     ),
                   ),
                   child: SafeArea(
                     top: false,
                     child: ElevatedButton(
-                      onPressed: _isValid
-                          ? () {
-                              Navigator.pushNamed(context, '/active_ride_dashboard');
-                            }
+                      onPressed: _isValid && !_isLoading
+                          ? _submitRide
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
-                        disabledBackgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                        disabledForegroundColor: Colors.white.withOpacity(0.7),
+                        disabledBackgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+                        disabledForegroundColor: Colors.white.withValues(alpha: 0.7),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: _isValid ? 4 : 0,
-                        shadowColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                        shadowColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text(
-                            'Publish Ride',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                      child: _isLoading 
+                        ? const SizedBox(
+                            width: 24, 
+                            height: 24, 
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text(
+                                'Publish Ride',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Icon(Icons.arrow_forward),
+                            ],
                           ),
-                          SizedBox(width: 8),
-                          Icon(Icons.arrow_forward),
-                        ],
-                      ),
                     ),
                   ),
                 ),
@@ -490,35 +671,44 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
     );
   }
 
-  Widget _buildSeatOption(BuildContext context, String text, bool isSelected) {
+  Widget _buildSeatOption(BuildContext context, String text, int seatCount) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      width: 32,
-      height: 32,
-      decoration: BoxDecoration(
-        color: isSelected
-            ? (isDark ? Theme.of(context).colorScheme.primary : Colors.white)
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(6),
-        boxShadow: isSelected && !isDark
-            ? [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 2,
-                  offset: const Offset(0, 1),
-                )
-              ]
-            : null,
-      ),
-      child: Center(
-        child: Text(
-          text,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: isSelected
-                ? (isDark ? Colors.white : Theme.of(context).colorScheme.primary)
-                : Colors.grey[500],
+    final isSelected = _selectedSeats == seatCount;
+    
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _selectedSeats = seatCount;
+        });
+      },
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: isSelected
+              ? (isDark ? Theme.of(context).colorScheme.primary : Colors.white)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(6),
+          boxShadow: isSelected && !isDark
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 2,
+                    offset: const Offset(0, 1),
+                  )
+                ]
+              : null,
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: isSelected
+                  ? (isDark ? Colors.white : Theme.of(context).colorScheme.primary)
+                  : Colors.grey[500],
+            ),
           ),
         ),
       ),
@@ -533,7 +723,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: isSelected ? primaryColor.withOpacity(0.1) : Colors.transparent,
+        color: isSelected ? primaryColor.withValues(alpha: 0.1) : Colors.transparent,
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
           color: isSelected

@@ -10,6 +10,56 @@ class AuthService {
 
   Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
 
+  Future<String?> getCurrentUserPhone() async {
+    final user = currentUser;
+    if (user == null) return null;
+
+    try {
+      final row = await _supabase
+          .from('users')
+          .select('phone')
+          .eq('id', user.id)
+          .maybeSingle();
+      return row == null ? null : row['phone'] as String?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> updateCurrentUserPhone(String phone) async {
+    final user = currentUser;
+    if (user == null) {
+      throw 'User is not logged in';
+    }
+
+    final normalized = phone.trim();
+    if (normalized.isEmpty) {
+      throw 'Phone number cannot be empty';
+    }
+
+    await _supabase.from('users').upsert(
+      {
+        'id': user.id,
+        'phone': normalized,
+      },
+      onConflict: 'id',
+    );
+  }
+
+  Future<void> syncCurrentUserProfile() async {
+    final user = currentUser;
+    if (user == null) return;
+
+    await _supabase.from('users').upsert(
+      {
+        'id': user.id,
+        'full_name': user.userMetadata?['full_name'] ?? user.email ?? 'User',
+        'email': user.email,
+      },
+      onConflict: 'id',
+    );
+  }
+
   /// Sign in with Google
   Future<void> signInWithGoogle() async {
     // Check if running on a platform that supports the native Google Sign In SDK

@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:co_rider/screens/login_screen.dart';
+import 'package:co_rider/screens/my_rides_screen.dart'; // Added this import
+import 'package:co_rider/screens/my_bookings_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +51,8 @@ class MyApp extends StatelessWidget {
             '/search_rides': (context) => const SearchRidesScreen(),
             '/ride_results': (context) => const RideResultsScreen(),
             '/ride_details': (context) => const RideDetailsScreen(),
+            '/my_rides': (context) => const MyRidesScreen(),
+            '/my_bookings': (context) => const MyBookingsScreen(),
           },
           debugShowCheckedModeBanner: false,
         );
