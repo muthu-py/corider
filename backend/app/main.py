@@ -4,10 +4,11 @@ from app.database import engine, Base
 # from app.database import engine, Base
 
 
-from app.routes import rides
+from app.routes import rides, ml
 
 app = FastAPI(title="CoRider Backend")
 app.include_router(rides.router)
+app.include_router(ml.router)
 
 Base.metadata.create_all(bind=engine)
 
