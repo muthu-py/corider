@@ -26,10 +26,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _setupAuthListener() {
-    _authSubscription = _authService.authStateChanges.listen((data) {
+    _authSubscription = _authService.authStateChanges.listen((data) async {
       final session = data.session;
       if (session != null && mounted) {
-        print("signed in");
+        try {
+          await _authService.syncCurrentUserProfile();
+        } catch (_) {}
+        if (!mounted) return;
         Navigator.of(context).pushReplacementNamed('/role_selection');
       }
     });

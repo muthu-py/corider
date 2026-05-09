@@ -1,6 +1,7 @@
 import 'package:co_rider/theme/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:co_rider/services/auth_service.dart';
+import 'package:co_rider/widgets/app_drawer.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
@@ -8,31 +9,10 @@ class RoleSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(),
       appBar: AppBar(
         title: const Text('CoRider'),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {},
-        ),
-        actions: [
-          IconButton(
-             icon: Icon(Theme.of(context).brightness == Brightness.dark ? Icons.light_mode : Icons.dark_mode),
-             onPressed: () {
-               ThemeController().toggleTheme();
-             },
-          ),
-          IconButton(
-            icon: Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
-            onPressed: () async {
-              await AuthService().signOut();
-              if (context.mounted) {
-                 Navigator.pushReplacementNamed(context, '/login');
-              }
-            },
-          ),
-          const SizedBox(width: 8), 
-        ],
         backgroundColor: Colors.transparent,
         elevation: 0,
         titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -44,76 +24,90 @@ class RoleSelectionScreen extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 16),
-              Text(
-                'How will you use CoRider today?',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28,
-                      height: 1.2,
-                      color: Theme.of(context).colorScheme.onBackground,
-                    ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              Expanded(
+        child: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildRoleCard(
-                      context,
-                      title: 'Driver',
-                      description:
-                          'Offer a ride on your route and lower your commuting costs.',
-                      icon: Icons.directions_car,
-                      buttonText: 'Drive Now',
-                      onPressed: () {
-                         Navigator.pushNamed(context, '/create_ride');
-                      },
+                    const SizedBox(height: 16),
+                    Text(
+                      'How will you use CoRider today?',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 28,
+                            height: 1.2,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
+                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 24),
-                    _buildRoleCard(
-                      context,
-                      title: 'Passenger',
-                      description:
-                          'Find a comfortable ride that matches your schedule.',
-                      icon: Icons.person_pin_circle,
-                      buttonText: 'Ride Now',
-                      onPressed: () {
-                         Navigator.pushNamed(context, '/search_rides');
-                      },
+                    const SizedBox(height: 32),
+                    const SizedBox(height: 32),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildRoleCard(
+                          context,
+                          title: 'Driver',
+                          description:
+                              'Offer a ride on your route and lower your commuting costs.',
+                          icon: Icons.directions_car,
+                          buttonText: 'Drive Now',
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/create_ride');
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        _buildRoleCard(
+                          context,
+                          title: 'Passenger',
+                          description:
+                              'Find a comfortable ride that matches your schedule.',
+                          icon: Icons.person_pin_circle,
+                          buttonText: 'Ride Now',
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/search_rides');
+                          },
+                        ),
+                      ],
                     ),
+                    if (AuthService().currentUser == null) ...[
+                      const SizedBox(height: 32),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacementNamed(context, '/login');
+                        },
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            text: 'Already have an account? ',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                            children: [
+                              TextSpan(
+                                text: 'Log in',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  text: 'Already have an account? ',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500,
-                      ),
-                  children: [
-                    TextSpan(
-                      text: 'Log in',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
